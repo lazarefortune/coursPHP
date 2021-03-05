@@ -1,0 +1,16 @@
+/****
+
+
+A FAIRE:
+
+- PAGE actions/edit.php;
+- Revoir le formulaire d'édition de l'utilisateur
+- créer un template , car il y a répétition du code HTML
+
+
+
+
+
+
+
+***/
