@@ -20,15 +20,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       $_SESSION['lastname'] = $user->getLastName();
       $_SESSION['login'] = $user->getLogin();
       header('Location: ../index.php');
+      die;
     } else {
-      $_SESSION['erreur'] = "Cet identifiant est déjà utilisé !! ";
+      $_SESSION['erreur'] = "Login is used !! ";
       var_dump($_SESSION['erreur']);
       header('Location: ../register.php');
+      die;
     }
 
 
   }else {
-    $_SESSION['erreur'] = "Veuillez remplir tous les champs !! ";
+    $_SESSION['erreur'] = "Fields can not be empty !! ";
     var_dump($_SESSION['erreur']);
     header('Location: ../register.php');
   }

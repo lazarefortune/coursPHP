@@ -1,12 +1,13 @@
 <?php
 session_start();
-  if (isset($_SESSION['login']) and !empty($_SESSION['login'])) {
+  if (!empty($_SESSION['login'])) {
     header("Location: index.php");
   }
-  // var_dump($_SESSION['erreur']);
-  if(isset($_SESSION['erreur']) and !empty($_SESSION['erreur'])){
-      $erreur = $_SESSION['erreur'];
-  }
+
+  // if(!empty($_SESSION['erreur'])){
+  //     $erreur = $_SESSION['erreur'];
+  // }
+  $erreur = $_SESSION['erreur'] ?? null;
   unset($_SESSION['erreur']);
 
 ?>
@@ -98,6 +99,7 @@ session_start();
         <div class="col-md-6">
           <form class="mt-4 needs-validation" method="post" action="actions/login.php">
             <h1>Formulaire de connexion</h1>
+
             <?php if(isset($erreur) and !empty($erreur)){ ?>
               <div class="alert alert-danger" role="alert">
                 <?php echo $erreur; ?>
@@ -112,7 +114,7 @@ session_start();
               <label for="password" class="form-label">Password</label>
               <input type="password" class="form-control" id="password" name="password">
             </div>
-            <button type="submit" class="btn btn-primary" name="registerForm2">Se connecter</button>
+            <button type="submit" class="btn btn-primary" name="registerForm2">Sign in</button>
           </form>
         </div>
       </div>

@@ -1,11 +1,10 @@
 <?php
   session_start();
-  if (isset($_SESSION['login']) and !empty($_SESSION['login'])) {
+  if (!empty($_SESSION['login'])) {
     header("Location: index.php");
   }
-  if(isset($_SESSION['erreur']) and !empty($_SESSION['erreur'])){
-      $erreur = $_SESSION['erreur'];
-  }
+
+  $erreur = $_SESSION['erreur'] ?? null;
   unset($_SESSION['erreur']);
 ?>
 
@@ -64,7 +63,7 @@
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="index.php">Home</a>
           </li>
-          <?php if(isset($_SESSION['login']) and !empty($_SESSION['login']) ) { ?>
+          <?php if(!empty($_SESSION['login']) ) { ?>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="" id="dropdown01" data-bs-toggle="dropdown" aria-expanded="false"><?php echo $_SESSION['login']; ?></a>
             <ul class="dropdown-menu" aria-labelledby="dropdown01">
@@ -96,9 +95,9 @@
         <div class="col-md-9">
           <form class="mt-4 needs-validation" method="post" action="actions/register.php">
             <h1>Formulaire d'inscription</h1>
-            <?php if(isset($erreur) and !empty($erreur)){ ?>
+            <?php if(!empty($erreur)){ ?>
               <div class="alert alert-danger" role="alert">
-                <?php echo $erreur; ?>
+                <?= $erreur; ?>
               </div>
             <?php } ?>
 
@@ -119,7 +118,7 @@
               <label for="password" class="form-label">Password</label>
               <input type="password" class="form-control" id="password" name="password">
             </div>
-            <button type="submit" class="btn btn-primary" name="registerForm2">S'inscrire</button>
+            <button type="submit" class="btn btn-primary" name="registerForm2">Sign up</button>
           </form>
         </div>
       </div>
