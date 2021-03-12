@@ -1,6 +1,10 @@
 <?php
 session_start();
 require '../classes/User.php';
+require '../classes/Bdd.php';
+
+$connexion = new Bdd('coursPHP', 'root' , '');
+$db = $connexion->get();
 // On teste la recption du formulaire
 // if (isset($_POST['registerForm2'])) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

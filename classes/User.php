@@ -1,16 +1,19 @@
 <?php
+require 'Bdd.php';
+
 
 /**
  * User
  */
 class User
 {
-  // protected const USERS_FILE = dirname(__DIR__).DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR.'users.json';
-  protected const USERS_FILE = __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR.'users.json';
+
   private $firstname;
   private $lastname;
   private $login;
   private $password;
+  private $id;
+
 
   /**
    * User constructor.
@@ -18,14 +21,16 @@ class User
    * @param string $lastname
    * @param string $login
    * @param string $password
+   * @param string $id
    */
 
-  function __construct(String $firstname, String $lastname, String $login, String $password)
+  function __construct(String $firstname, String $lastname, String $login, String $password, String $id = null)
   {
     $this->setFistName($firstname);
     $this->setLastName($lastname);
     $this->setLogin($login);
     $this->setPassword($password);
+    $this->setId($id);
   }
 
 
@@ -66,66 +71,67 @@ class User
     $this->password = $password;
   }
 
-  public static function allUsersData(){
-    // On récupère le fichier
-    $fichier = User::USERS_FILE;
-    // On le met sous forme de chaine de caractères
-    $contents = file_get_contents($fichier, true);
-    // On transforme le JSON en array
-    $contents = json_decode($contents, true);
-    // On vérifie l'existence de l'utilisateur
-    return $contents;
+  public function getId(): string {
+    return $this->id;
   }
 
-  public function save(){
-    $contents = User::allUsersData();
-    if (array_key_exists ( $this->getLogin() , $contents )) {
-      // On met à jour les données
-      $contents[$this->getLogin()]["firstname"] = $this->getFirstName();
-      $contents[$this->getLogin()]["lastname"] = $this->getLastName();
-      $contents[$this->getLogin()]["password"] = password_hash($this->getPassword(), PASSWORD_DEFAULT);
+  public function setId(string $id = null): void {
+    $this->id = $id;
+  }
 
-      // On remet au format JSON
-      $contents = json_encode($contents);
-      // On enregistre les données
-      file_put_contents($fichier, $contents);
-    } else {
-      // Ajout du nouvel utilisateur dans le tableau
-      $newUser = [
-          "firstname" => $this->getFirstName(),
-          "lastname" => $this->getLastName(),
-          "password" => password_hash($this->getPassword(), PASSWORD_DEFAULT),
-        ];
 
-      $contents[$this->getLogin()] = $newUser;
-      // On remet au format JSON
-      $contents = json_encode($contents);
-      // On enregistre les données
-      file_put_contents($fichier, $contents);
-    }
+  public function register(){
 
   }
 
-  public static function load(String $login, String $password): User{
-    $contents = User::allUsersData();
-    if (array_key_exists ( $login , $contents )) {
-      $recupPassword = $contents[$login]["password"];
+  public static function load(String $username, String $password): User{
 
-      if ( password_verify($password, $recupPassword) ) {
-        // Utilisateur confirmé
-        $firstname = $contents[$login]["firstname"] ;
-        $lastname = $contents[$login]["lastname"] ;
-        $user = new User($firstname, $lastname, $login, $password);
+    $db = Bdd::get();
+    $req = $db->prepare('SELECT * FROM users WHERE username = ?');
+    $req->execute(array($username));
+    $data = $req->fetch();
+    $nbr = $req->rowCount();
+    var_dump($nbr, $data);
+    // die;
+    if ($nbr == 1) {
+      echo "il y a 1 utilisateur";
+      if (password_verify($password, $data['password'])) {
+        // le mot de passe est le bon
+        $id = $data['id'];
+        $firstname = $data['firstname'];
+        $lastname = $data['lastname'];
+        $user = new User($firstname, $lastname, $username, $password, $id);
+        var_dump($user);
+        // die;
         return $user;
       }else {
-        // Utilisateur non confirmé(mot de passe incorrect)
-        // echo "utilisateur inexistant";
         throw new Exception('Identifiant ou mot de passe incorrect.');
       }
-    } else {
-        // Utilisateur non confirmé(login incorrect)
-        throw new Exception('Identifiant ou mot de passe incorrect.');
+    }else {
+      echo "il n'y a pas d'utilisateur";
+      throw new Exception('Identifiant ou mot de passe incorrect.');
     }
+
+    die();
+    // $contents = User::allUsersData();
+    // if (array_key_exists ( $login , $contents )) {
+    //   $recupPassword = $contents[$login]["password"];
+    //
+    //   if ( password_verify($password, $recupPassword) ) {
+    //     // Utilisateur confirmé
+    //     $firstname = $contents[$login]["firstname"] ;
+    //     $lastname = $contents[$login]["lastname"] ;
+    //     $user = new User($firstname, $lastname, $login, $password);
+    //     return $user;
+    //   }else {
+    //     // Utilisateur non confirmé(mot de passe incorrect)
+    //     // echo "utilisateur inexistant";
+    //     throw new Exception('Identifiant ou mot de passe incorrect.');
+    //   }
+    // } else {
+    //     // Utilisateur non confirmé(login incorrect)
+    //     throw new Exception('Identifiant ou mot de passe incorrect.');
+    // }
   }
 
   public static function ifExist($login): bool{
